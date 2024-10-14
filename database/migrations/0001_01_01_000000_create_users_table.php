@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->integer('number_registration')->unique();
+            $table->enum('is_admin',['admin','user'])->default('user');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->softDeletes('deleted_at');
             $table->rememberToken();
             $table->timestamps();
         });
