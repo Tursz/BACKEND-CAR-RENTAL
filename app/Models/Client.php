@@ -18,4 +18,9 @@ class Client extends Model
         'address',
         'phone_number',
     ];
+
+    public function rentals()
+    {
+       return $this->hasMany(Rental::class);
+    }
 }

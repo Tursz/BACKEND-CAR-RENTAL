@@ -19,7 +19,7 @@ class ClientController extends Controller
             return response()->json(['data' => 'No clients'], Response::HTTP_NO_CONTENT);
         }
 
-        return response()->json(['data' => Client::all()], Response::HTTP_OK);
+        return response()->json(['data' => Client::with('rentals')->get()], Response::HTTP_OK);
     }
 
     /**
