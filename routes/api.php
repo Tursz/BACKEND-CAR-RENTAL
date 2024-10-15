@@ -5,9 +5,11 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ColorController;
+use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -59,4 +61,12 @@ Route::middleware(['auth:sanctum'])->group( function () {
     Route::put('/color/{id}', [ColorController::class, 'update'])->name('color.update');
     Route::get('/color/{id}', [ColorController::class, 'show'])->name('color.show');
     Route::delete('/color/{id}', [ColorController::class, 'destroy'])->name('color.destroy');
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/type', [TypeController::class, 'index'])->name('type.index');
+    Route::post('/type', [TypeController::class, 'store'])->name('type.store');
+    Route::put('/type/{id}', [TypeController::class, 'update'])->name('type.update');
+    Route::get('/type/{id}', [TypeController::class, 'show'])->name('type.show');
+    Route::delete('/type/{id}', [TypeController::class, 'destroy'])->name('type.destroy');
 });
