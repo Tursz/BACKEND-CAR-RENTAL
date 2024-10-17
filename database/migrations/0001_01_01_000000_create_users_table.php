@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->integer('number_registration')->unique();
             $table->enum('is_admin',['admin','user'])->default('user');
+            $table->enum('is_active',['active','inactive'])->default('active');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->softDeletes('deleted_at');

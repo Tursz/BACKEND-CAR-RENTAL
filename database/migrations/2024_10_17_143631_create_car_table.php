@@ -13,18 +13,23 @@ return new class extends Migration
     {
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('brand_id');
-            $table->foreignId('color_id');
-            $table->foreignId('type_id');
+            $table->UnsignedBigInteger('brand_id');
+            $table->UnsignedBigInteger('color_id');
+            $table->UnsignedBigInteger('type_id');
             $table->string('name');
             $table->string('plate');
             $table->double('km');
             $table->string('chassi');
+            $table->enum('is_active',['active', 'inactive'])->default('active');
             $table->integer('year');
             $table->enum('is_available',['available', 'not_available'])->default('available');
             $table->double('price');
             $table->softDeletes('deleted_at');
             $table->timestamps();
+
+            $table->foreign('brand_id')->references('id')->on('brands');
+            $table->foreign('color_id')->references('id')->on('colors');
+            $table->foreign('type_id')->references('id')->on('types');
         });
     }
 
