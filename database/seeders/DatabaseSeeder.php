@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
-use App\Models\User;
+use App\Models\Color;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Type;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,6 +26,10 @@ class DatabaseSeeder extends Seeder
             'is_admin' => 'admin',
             'password' => Hash::make('password')
         ]);
+
+        Type::factory(5)->create();
+
+        Color::factory(15)->create();
 
         Client::factory(125)->create();
     }
