@@ -15,7 +15,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        if (!Type::first()) {
+        if (!Type::count()) {
             return response()->json(['data' => 'No type found'], Response::HTTP_NO_CONTENT);
         }
 

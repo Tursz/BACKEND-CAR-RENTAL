@@ -15,7 +15,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        if (!Brand::first()) {
+        if (!Brand::count()) {
             return response()->json(['data' => 'No brands'], Response::HTTP_NO_CONTENT);
         }
 

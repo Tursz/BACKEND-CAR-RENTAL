@@ -15,7 +15,7 @@ class ColorController extends Controller
      */
     public function index()
     {
-        if (!Color::first()) {
+        if (!Color::count()) {
             return response()->json(['data' => 'No colors'], Response::HTTP_NO_CONTENT);
         }
 

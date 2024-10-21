@@ -15,7 +15,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        if (!Client::first()) {
+        if (!Client::count()) {
             return response()->json(['data' => 'No clients'], Response::HTTP_NO_CONTENT);
         }
 

@@ -15,7 +15,7 @@ class CarController extends Controller
      */
     public function index()
     {
-        if (!Car::first()) {
+        if (!Car::count()) {
             return response()->json(['data' => 'No cars found'], Response::HTTP_NO_CONTENT);
         }
 

@@ -33,7 +33,7 @@ class Rental extends Model
         return $this->belongsTo(Car::class);
     }
 
-    public function payment()
+    public function payments()
     {
         return $this->hasMany(Payment::class);
     }

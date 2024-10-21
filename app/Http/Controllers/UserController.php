@@ -13,7 +13,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (!User::first()) {
+        if (!User::count()) {
             return response()->json(['data' => 'No users'], Response::HTTP_NO_CONTENT);
         }
 
