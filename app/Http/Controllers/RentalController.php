@@ -17,7 +17,7 @@ class RentalController extends Controller
     public function index(Request $request)
     {
 
-        if (!$rental = Rental::all()) {
+        if (!$rental = Rental::count()) {
             return response()->json(['message' => 'No rental found'], Response::HTTP_OK);
         }
 
@@ -41,11 +41,11 @@ class RentalController extends Controller
             'client_id' => $request->client_id,
             'car_id' => $request->car_id,
             'payment_method' => $request->payment_method,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'start_date' => date('Y-m-d'),
+            'end_date' => date('Y-m-d', strtotime('+1 month')),
             'is_in_installment' => $request->is_in_installment
         ]);
-        if ($request->is_in_installment) {
+        if ($request->is_in_installment && $request->payment_method != 'PIX') {
             for ($i = 0; $i < $request->installment; $i++) {
                 $payment = Payment::create([
                     'rental_id' => $rental->id,
@@ -72,7 +72,7 @@ class RentalController extends Controller
      */
     public function show(string $id)
     {
-        if (!$rental = Rental::with('payment')->find($id)) {
+        if (!$rental = Rental::with('payments')->find($id)) {
             return response()->json(['data' => 'Rental not found'], Response::HTTP_NO_CONTENT);
         }
 
@@ -85,12 +85,12 @@ class RentalController extends Controller
     public function update(Request $request, string $id)
     {
         if(!$payment = Payment::find($id)){
-            return response()->json(['data' => 'Rental not found'], Response::HTTP_NO_CONTENT);
+            return response()->json(['message' => 'No payment found.'], Response::HTTP_NO_CONTENT);
         }
+
         $payment->update([
             'status' => $request->status,
         ]);
-
         return response()->json(['data' => $payment], Response::HTTP_OK);
     }
 
