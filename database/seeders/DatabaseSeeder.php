@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
+use App\Models\Car;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Client;
 use App\Models\Color;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Type;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -32,5 +34,9 @@ class DatabaseSeeder extends Seeder
         Color::factory(15)->create();
 
         Client::factory(125)->create();
+
+        Brand::factory(15)->create();
+
+        Car::factory(15)->create();
     }
 }

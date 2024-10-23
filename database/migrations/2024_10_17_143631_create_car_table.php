@@ -18,7 +18,7 @@ return new class extends Migration
             $table->UnsignedBigInteger('type_id');
             $table->string('name');
             $table->string('plate');
-            $table->double('km');
+            $table->double('km')->default(0);
             $table->string('chassi');
             $table->enum('is_active',['active', 'inactive'])->default('active');
             $table->integer('year');
