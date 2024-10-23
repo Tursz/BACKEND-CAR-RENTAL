@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Car;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class BrandController extends Controller
@@ -29,12 +31,17 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:100', 'min:3'],
-            'image' => ['required', 'image']
+            'logo' => ['required', 'image']
         ]);
 
+        //Recebe o url do host
+        $url = $request->url();
+        //Formata a url para mostrar a imagem pelo url
+        $url = Str::before($url, 'api') . 'storage/';
         $brand = Brand::create([
             'name' => $request->name,
-            'image' => $request->image->store('brands', 'public')
+            //Concatena a url com o arquivo da imagem para armazenar no banco
+            'logo' => $url . $request->logo->store('brands', 'public')
         ]);
 
         return response()->json(['data' => $brand], Response::HTTP_OK);
@@ -58,14 +65,33 @@ class BrandController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:100', 'min:3'],
-            'image' => ['image']
+            'name' => ['string', 'max:100', 'min:3'],
+            'logo' => ['image']
         ]);
         if (!$brand = Brand::find($id)) {
             return response()->json(['data' => 'Brand not found'], Response::HTTP_NO_CONTENT);
         }
+        if ($request->logo) {
+            //Formata a url fornecida pelo banco para o laravel conseguir encontrar o caminho da imagem
+            $logo = Str::after($brand->logo, 'storage/');
+            //Formata a url para adicionar a nova imagem no banco
+            $url = $request->url();
+            $url = Str::before($url, 'api') . 'storage/';
+            //Deleta a imagem anterior do storage
+            Storage::disk('public')->delete($logo);
 
-        $brand->update($request->all());
+            $brand->update([
+                'name' => $request->name ?: $brand->name,
+                //Concatena a url com o arquivo da imagem para armazenar no banco
+                'logo' => $url . $request->logo->store('brands', 'public')
+            ]);
+
+            return response()->json(['data' => $brand], Response::HTTP_OK);
+        }
+
+        $brand->update([
+            'name' => $request->name ?: $brand->name,
+        ]);
 
         return response()->json(['data' => $brand], Response::HTTP_OK);
     }
@@ -79,7 +105,7 @@ class BrandController extends Controller
             return response()->json(['data' => 'Brand not found'], Response::HTTP_NO_CONTENT);
         }
 
-        if (!Car::where('brand_id', $id)->first()) {
+        if (!Car::where('brand_id', $id)->count()) {
             $brand->delete();
             return response()->json(['message' => 'Brand deleted'], Response::HTTP_NO_CONTENT);
         }
