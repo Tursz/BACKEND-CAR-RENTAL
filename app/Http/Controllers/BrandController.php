@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Car;
+use App\Services\FilterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -12,16 +13,29 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BrandController extends Controller
 {
+    public $brand;
+    public function __construct(Brand $brand)
+    {
+        $this->brand = $brand;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (!Brand::count()) {
-            return response()->json(['data' => 'No brands'], Response::HTTP_NO_CONTENT);
+        $filter = [
+            'name' => 'like',
+        ];
+
+        //Aplica os filtros desejados pelo usuário.
+        $brand = FilterService::filterBrand($this->brand, $filter,  $request);
+
+        //Valida a existencia de brands
+        if (!$this->brand->exists()) {
+            return response()->json(['message' => 'No data found'], Response::HTTP_NO_CONTENT);
         }
 
-        return response()->json(['data' => Brand::with('cars')->get()], Response::HTTP_OK);
+        return response()->json(['data' => $brand], Response::HTTP_OK);
     }
 
     /**
@@ -36,9 +50,11 @@ class BrandController extends Controller
 
         //Recebe o url do host
         $url = $request->url();
+
         //Formata a url para mostrar a imagem pelo url
         $url = Str::before($url, 'api') . 'storage/';
-        $brand = Brand::create([
+
+        $brand = $this->brand->create([
             'name' => $request->name,
             //Concatena a url com o arquivo da imagem para armazenar no banco
             'logo' => $url . $request->logo->store('brands', 'public')
@@ -52,7 +68,7 @@ class BrandController extends Controller
      */
     public function show(string $id)
     {
-        if (!$brand = Brand::find($id)) {
+        if (!$brand = $this->brand->first($id)) {
             return response()->json(['data' => 'Brand not found'], Response::HTTP_NO_CONTENT);
         }
 
@@ -68,15 +84,17 @@ class BrandController extends Controller
             'name' => ['string', 'max:100', 'min:3'],
             'logo' => ['image']
         ]);
-        if (!$brand = Brand::find($id)) {
+        if (!$brand = $this->brand->first($id)) {
             return response()->json(['data' => 'Brand not found'], Response::HTTP_NO_CONTENT);
         }
         if ($request->logo) {
             //Formata a url fornecida pelo banco para o laravel conseguir encontrar o caminho da imagem
             $logo = Str::after($brand->logo, 'storage/');
+
             //Formata a url para adicionar a nova imagem no banco
             $url = $request->url();
             $url = Str::before($url, 'api') . 'storage/';
+
             //Deleta a imagem anterior do storage
             Storage::disk('public')->delete($logo);
 
@@ -101,7 +119,7 @@ class BrandController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!$brand = Brand::find($id)) {
+        if (!$brand = $this->brand->find($id)) {
             return response()->json(['data' => 'Brand not found'], Response::HTTP_NO_CONTENT);
         }
 
