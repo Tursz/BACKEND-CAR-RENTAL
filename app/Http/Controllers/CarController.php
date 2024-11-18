@@ -5,21 +5,35 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Car;
 use App\Models\Rental;
+use App\Services\FilterService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CarController extends Controller
 {
+
+    public $car;
+    public function __construct(Car $car){
+        $this->car = $car;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (!Car::count()) {
-            return response()->json(['data' => 'No cars found'], Response::HTTP_NO_CONTENT);
-        }
+        $filter = [
+            'name' => 'like',
+            'brand_id' => '=',
+            'color_id' => '=',
+            'is_active' => '=',
+            'type_id' => '=',
+            'price' => '>=',
+            'year' => '=',
+        ];
 
-        return response()->json(['data' => Car::with('brand')->get()], Response::HTTP_OK);
+        $car = FilterService::filterCar($this->car,$filter,$request);
+
+        return response()->json(['data' => $car[0]], $car[1]);
     }
 
     /**

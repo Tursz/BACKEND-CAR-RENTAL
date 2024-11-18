@@ -30,12 +30,8 @@ class BrandController extends Controller
         //Aplica os filtros desejados pelo usuário.
         $brand = FilterService::filterBrand($this->brand, $filter,  $request);
 
-        //Valida a existencia de brands
-        if (!$this->brand->exists()) {
-            return response()->json(['message' => 'No data found'], Response::HTTP_NO_CONTENT);
-        }
-
-        return response()->json(['data' => $brand], Response::HTTP_OK);
+        //Retona com valor e status baseado na validação da service
+        return response()->json(['data' => $brand[0]], $brand[1]);
     }
 
     /**
